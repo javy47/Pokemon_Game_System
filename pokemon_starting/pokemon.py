@@ -1,36 +1,5 @@
-
-#Creating a Trainer Class
-class Trainer():
-    def __init__(self, name, pokemon_party=None):
-        self.name = name
-        self.pokemon_party = pokemon_party
-    
-    def __repr__(self):
-        #print trainers name and pokemon
-        print("Trainer: {trainer}\nPokemon Party:".format(trainer=self.name))
-        for pokemon in self.pokemon_party:
-            print(pokemon)
-        return "Those are all the pokemon n your party"
-
-    def add_to_party(self,pokemon):
-        #If party is full(six pokemon) trainer can not add pokemon to the party
-        if len(self.pokemon_party) == 6:
-            print("Your party of pokemon is currently at capacity. If you wish to add a pokemon you need to remove one first")
-        else:
-            self.pokemon_party.append(pokemon)
-
-    def heal_pokemon(self,pokemon):
-        #Will take a healing item(has a specific amount of health it can heal)
-        #pokemon.increase_hp(item.amount)
-        counter = 1
-        print("The following are all healing items available to the trainer: ")
-        for item in Healing_Items:
-            print("{num}) {item}: heals for {amount} HP".format(num=counter,item=item["name"],amount=item["amount"]))
-            counter+=1
-        
-        choice = int(input("Which item do you want to use on {pokemon}".format(pokemon=pokemon.name)))
-        
-        pokemon.increase_hp(Healing_Items[choice-1]["amount"])
+from Trainer import Trainer
+from pokemon_data import Pokemon_Types
 
 
 #creating a class for pokemon
@@ -44,13 +13,14 @@ class Pokemon():
         self.fainted = fainted
         #Add Description for pokemon moves later
         self.moves = [{"name":"Tackle", "damage": 35, "damage_type": "Normal"}]
+        self.maximum_level = 100
 
-        #Work on this later
+        #Work on this later --need to make this more robust
         self.nature = nature
         self.phy_atk = phy_atk
         self.defense = defense
         
-    
+    # Returns all data on the pokemon that a user is printing
     def __repr__(self):
         all_moves = ""
         for move in self.moves:
@@ -58,15 +28,23 @@ class Pokemon():
 
         return "Pokemon Name: {name} \nHP: {current_hp}/{max_hp}\nLevel: {level} \nType: {pokemon_type} \nNature: {nature}\n---------------\nMoves:\n{Moves}".format(name= self.name,current_hp=self.current_hp,max_hp=self.maximum_hp, level = self.level, pokemon_type = self.pokemon_type,nature=self.nature, Moves=all_moves)
 
+    #???????
     def assign_type(self,pokemon_type):
         for pk_type in Pokemon_Types:
             if pk_type["type"] == pokemon_type:
                 return pk_type
             
-    #When a pokemon gains enough exp its level should go up. This function does exactly that
+    #When a pokemon gains enough exp its level should go up. This function does exactly that. This method should not work after lvl 100
     def level_up(self):
-        self.level+=1
-        print("{pokemon} has gained a level".format(pokemon=self.name))
+        if self.level < self.maximum_level:
+            self.level+=1
+            #simplistic approach
+            self.phy_atk+=2
+            self.defense+=2
+            self.maximum_hp+=10
+            print("{pokemon} has gained a level".format(pokemon=self.name))
+        else:
+            print("{pokemon} level  is already maxed and will not go any higher")
 
     #This method will decrease the pokemons HP value by the amount given. Before that check can occurs the code checks to see if the pokemon is already fainted
     def decrease_hp(self,amount):
@@ -132,29 +110,7 @@ class Pokemon():
 
         self.moves.append({"name": name, "damage": power, "damage_type": damage_type})
                       
-#For each pokemon create their type with a dict so that you can have it tied to each weakness
-#------------------------------------------------------------------------------------------------------------------------------------------------------
-Pokemon_Types = [
-                    {"type": "Fire" ,"weakness":["Water","Ground","Rock"]},
-                    {"type": "Water","weakness":["Electric","Grass"]},
-                    {"type": "Grass" ,"weakness":["Bug","Fire","Flying","Ice","Poison"]},
-                    {"type": "Normal","weakness":["Fighting"]},
-                    {"type": "Fighting","weakness":["Flying","Psychic","Fairy"]},
-                    {"type": "Flying","weakness":["Rock","Electric","Ice"]},
-                    {"type": "Poison","weakness":["Ground","Psychic"]},
-                    {"type": "Ground","weakness":["Water","Grass","Ice"]},
-                    {"type": "Rock","weakness":["Fighting","Ground","Steel", "Water", "Grass"]},
-                    {"type": "Bug","weakness":["Flying", "Rock", "Fire"]},
-                    {"type": "Ghost","weakness":["Ghost", "Dark"]},
-                    {"type": "Steel","weakness":["Fighting", "Ground", "Fire"]},
-                    {"type": "Electric","weakness":["Ground"]},
-                    {"type": "Psychic","weakness":["Bug","Ghost","Dark"]},
-                    {"type": "Ice","weakness":["Fighting","Rock","Steel","Fire"]},
-                    {"type": "Dragon","weakness":["Ice", "Dragon", "Fairy"]},
-                    {"type": "Fairy","weakness":["Poison", "Steel"]},
-                    {"type": "Dark","weakness":["Fighting","Bug","Fairy"]},
-                ]
-Healing_Items = [{"name": "potion", "amount": 20}]
+
 #------------------------------------------------------------------------------------------------------------------------------------------------------                
 #Testing the Pokemon Type
 # print(Pokemon_Types[0]["type"])
@@ -163,14 +119,14 @@ Healing_Items = [{"name": "potion", "amount": 20}]
 #----------------------------------------------------------------------------------------------------
 
 
-Chimchar = Pokemon("Chimchar",5,"Fire",55,55,"Jolly")
-Bulbasaur = Pokemon("Bulbasaur",5,"Grass",55,55,"Calm")
-Psyduck = Pokemon("Psyduck",5,"Water",55,55,"Jolly")
-AshKetchum = Trainer("Ash",[Chimchar,Bulbasaur,Psyduck])
-print(AshKetchum)
+# Chimchar = Pokemon("Chimchar",5,"Fire",55,55,"Jolly")
+# Bulbasaur = Pokemon("Bulbasaur",5,"Grass",55,55,"Calm")
+# Psyduck = Pokemon("Psyduck",5,"Water",55,55,"Jolly")
+# AshKetchum = Trainer("Ash",[Chimchar,Bulbasaur,Psyduck])
+# print(AshKetchum)
 
-Chimchar.attack(Bulbasaur)
-AshKetchum.heal_pokemon(Bulbasaur)
+# Chimchar.attack(Bulbasaur)
+# AshKetchum.heal_pokemon(Bulbasaur)
 
 
 # print(Chimchar)
