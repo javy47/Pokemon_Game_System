@@ -1,24 +1,39 @@
 from Trainer import Trainer
 from pokemon_data import Pokemon_Types
+import random
 
 
 #creating a class for pokemon
 class Pokemon():
-    def __init__(self, name, level, pokemon_type, maximum_hp, current_hp, nature, fainted=False, phy_atk=4, defense=4):
+    def __init__(self, name, level, pokemon_type1, pokemon_type2, base_hp, base_attack, base_defense, base_spatk, base_spdef, base_speed, fainted=False):
+        #Database Provided
         self.name = name
         self.level = level
-        self.pokemon_type = self.assign_type(pokemon_type)
-        self.maximum_hp = maximum_hp
-        self.current_hp = current_hp
+        self.pokemon_type1 = pokemon_type1
+        self.pokemon_type2 = pokemon_type2
+        self.base_hp = base_hp
+        self.base_attack = base_attack
+        self.base_defense = base_defense
+        self.base_spatk = base_spatk
+        self.base_spdef = base_spdef
+        self.base_speed = base_speed
+
+        #Automatically Provided
+        self.maximum_hp = base_hp
+        self.current_hp = base_hp
         self.fainted = fainted
+
         #Add Description for pokemon moves later
         self.moves = [{"name":"Tackle", "damage": 35, "damage_type": "Normal"}]
         self.maximum_level = 100
 
+        #Create a function to assign weakness
+        self.weakness = []
+
         #Work on this later --need to make this more robust
-        self.nature = nature
-        self.phy_atk = phy_atk
-        self.defense = defense
+            # self.nature = nature
+            # self.phy_atk = phy_atk
+            # self.defense = defense
         
     # Returns all data on the pokemon that a user is printing
     def __repr__(self):
@@ -26,22 +41,23 @@ class Pokemon():
         for move in self.moves:
             all_moves = all_moves + move["name"]+"|"+ "Power:"+ str(move["damage"])+"\n"
 
-        return "Pokemon Name: {name} \nHP: {current_hp}/{max_hp}\nLevel: {level} \nType: {pokemon_type} \nNature: {nature}\n---------------\nMoves:\n{Moves}".format(name= self.name,current_hp=self.current_hp,max_hp=self.maximum_hp, level = self.level, pokemon_type = self.pokemon_type,nature=self.nature, Moves=all_moves)
+        return "Pokemon Name: {name} \nHP: {current_hp}/{max_hp}\nLevel: {level} \nType1: {pokemon_type1}\nType2: {pokemon_type2}\n---------------\nMoves:\n{Moves}".format(
+            name= self.name.capitalize() ,current_hp=self.current_hp,max_hp=self.maximum_hp, level = self.level, pokemon_type1 = self.pokemon_type1,pokemon_type2= self.pokemon_type2, Moves=all_moves)
 
-    #???????
-    def assign_type(self,pokemon_type):
-        for pk_type in Pokemon_Types:
-            if pk_type["type"] == pokemon_type:
-                return pk_type
-            
+
+
     #When a pokemon gains enough exp its level should go up. This function does exactly that. This method should not work after lvl 100
+    # Simplistic version of leveling up for now
     def level_up(self):
         if self.level < self.maximum_level:
             self.level+=1
             #simplistic approach
-            self.phy_atk+=2
-            self.defense+=2
-            self.maximum_hp+=10
+            self.base_hp+= random.randint(5,10)
+            self.base_attack+= random.randinit(3,4)
+            self.base_defense+= random.randinit(3,4)
+            self.base_spatk+= random.randinit(3,4)
+            self.base_spdef+= random.randinit(3,4)
+            self.base_speed+= random.randinit(3,4)
             print("{pokemon} has gained a level".format(pokemon=self.name))
         else:
             print("{pokemon} level  is already maxed and will not go any higher")
@@ -69,8 +85,10 @@ class Pokemon():
             return "You can not use recovery items on Fainted Pokemon"
         elif (self.current_hp + amount) > self.maximum_hp:
             self.current_hp = self.maximum_hp
+            return "your pokemon hp has increased"
         else:
             self.current_hp += amount
+            return "Your pokemon has been healed"
 
     #If the pokemon is fainted then this method will function.
     def revive(self):
@@ -79,6 +97,8 @@ class Pokemon():
         else:
             print("The item revive has no effect on pokemon not fainted")
 
+
+#---------------------------------------
     #Used for pokemon to attack each other. Using a *args in the case of multiple pokemon being attacked
     def attack(self,*pokemons):
         i=1
@@ -130,7 +150,7 @@ class Pokemon():
 
 
 # print(Chimchar)
-print(Bulbasaur)
+# print(Bulbasaur)
 
 # Chimchar.attack(Bulbasaur)
 # Bulbasaur.learn_move("Razer Leaf", 35, "Grass")
