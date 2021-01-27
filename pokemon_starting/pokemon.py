@@ -1,6 +1,10 @@
+import sqlite3
 from Trainer import Trainer
 from pokemon_data import Pokemon_Types
 import random
+
+conn = sqlite3.connect('pokemon.db')
+db = conn.cursor()
 
 
 #creating a class for pokemon
@@ -41,9 +45,39 @@ class Pokemon():
         for move in self.moves:
             all_moves = all_moves + move["name"]+"|"+ "Power:"+ str(move["damage"])+"\n"
 
-        return "Pokemon Name: {name} \nHP: {current_hp}/{max_hp}\nLevel: {level} \nType1: {pokemon_type1}\nType2: {pokemon_type2}\n---------------\nMoves:\n{Moves}".format(
-            name= self.name.capitalize() ,current_hp=self.current_hp,max_hp=self.maximum_hp, level = self.level, pokemon_type1 = self.pokemon_type1,pokemon_type2= self.pokemon_type2, Moves=all_moves)
+        return "Pokemon Name: {name} \nHP: {current_hp}/{max_hp}\nLevel: {level} \nType1: {pokemon_type1}\nType2: {pokemon_type2}\n---------------\nWeakness:\n{weakness}\n---------------\nMoves:\n{Moves}".format(
+            name= self.name.capitalize() ,current_hp=self.current_hp,max_hp=self.maximum_hp, level = self.level, pokemon_type1 = self.pokemon_type1,pokemon_type2= self.pokemon_type2,weakness=self.weakness, Moves=all_moves)
 
+    #Used to assign each pokemon with a weakness
+    def pokemon_weakness(self, type1, type2):
+       
+        db.execute('SELECT weakness FROM pokemon_type WHERE type= :type',{'type':type1 })
+        type1_weakness = db.fetchall()
+
+        for item in type1_weakness:
+            self.weakness.append({'type': item[0], 'multiplier': 2})
+
+        db.execute('SELECT weakness FROM pokemon_type WHERE type= :type',{'type':type2 })
+        type2_weakness = db.fetchall()
+
+        #Making sure that any overlapping weaknesses are stacked instead of showin gup 2x
+        temp = 0
+        for typei in type2_weakness:
+            for i in range(0,len(self.weakness)):
+                print(self.weakness[i]['type'])
+                if typei[0] == self.weakness[i]['type']:
+                    self.weakness[i]['multiplier']*=2
+                    # print('There is a duplicate of TYPE:'+self.weakness[i]['type'])
+                    temp = i
+                    break
+
+            if typei[0] != self.weakness[temp]['type']:       
+                self.weakness.append({'type': typei[0], 'multiplier': 2})
+        
+        #Time to take the pokemon resistances into account
+        #  db.execute('SELECT resistance FROM pokemon_type WHERE type= :type',{'type':type2 })
+        
+     
 
 
     #When a pokemon gains enough exp its level should go up. This function does exactly that. This method should not work after lvl 100

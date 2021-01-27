@@ -30,7 +30,7 @@ def createUser():
 
 
 
-def  loadUser():
+def loadUser():
     print("load user")
 
     username= input('Enter the username of your account: ')
@@ -62,7 +62,7 @@ def  loadUser():
         #print("pokemon level: "+ str(monster_level))
         #First pokemon type
         monster_type1 = db.execute('SELECT type FROM pokemon_type WHERE id= :id', {'id': monster[3]}).fetchone()
-        #print(monster_type1[0])
+        # print(monster_type1)
         #second pokemon type
         monster_type2 = db.execute('SELECT type FROM pokemon_type WHERE id= :id', {'id': monster[4]}).fetchone()
         #print(monster_type2[0])
@@ -83,9 +83,12 @@ def  loadUser():
         #print(monster_spdef)
         #pokemon base speed
         monster_spe = monster[10]
-       # print(monster_spe)
-    
-        pokemon_party.append(Pokemon(monster_name, monster_level, monster_type1[0], monster_type2[0], monster_hp, monster_atk, monster_def, monster_spatk, monster_spdef, monster_spe))
+        # print(monster_spe)
+
+        pkmn = Pokemon(monster_name, monster_level, monster_type1[0], monster_type2[0], monster_hp, monster_atk, monster_def, monster_spatk, monster_spdef, monster_spe)
+        #assign all weakness to pokemon after their creation
+        pkmn.pokemon_weakness(monster_type1[0],monster_type2[0])
+        pokemon_party.append(pkmn)
     # print(pokemon_party[0],pokemon_party[1])
 
 
@@ -93,49 +96,90 @@ def  loadUser():
     user = Trainer(name[1], name[0], pokemon_party)
     print(user)
     greeting(user)
-    
+
+def print_pokemon(user):
+     pokemon_traner_list = db.execute('SELECT * FROM pokemon_party WHERE trainer_id= :trainer_id',{'trainer_id': user.name}).fetchall()
+
+     count=1
+     for pokemon in user.pokemon_party:
+         print("{choice}) Pokemon: {name} HP: {current_hp}/{max_hp}".format(choice=count,name=pokemon.name, current_hp= pokemon.current_hp, max_hp=pokemon.maximum_hp))
+         count+=1
 
 
 
 def greeting(user=None):
-    if user is None:
-        print("Hello user welcome to beta 1 of my pokemon system \nWhat would you like to do?")
 
-        #Will loop until the user selects the number 1 or 2
-        answer = 0
-        while not answer:
-            try:      
-                answer = int(input("1) Create a user \n2) Load a user \nAnswer Here: "))
-                if answer not in (1,2):
-                    raise ValueError
-                break
-            except ValueError:
-                print('Please Select a Valid Number')
-
-        print('Ok you chose '+str(answer))
-        if answer == 1:
-            createUser()
-        elif answer == 2:
-            loadUser()
-        else:
-            print( "Function does not exist")
-    else:
         print('Now that you have your account what would you like to do?')
-        print('1) Edit Team')
-        print('2) Battle')
-        print('3) Train Pokemon')
-        print('4) Heal')
-        choice= int(input)
-        # user.heal_pokemon(user.pokemon_party[0])
-        
+        print('1) Edit Team: [You can ADD or REMOVE pokemon from your team]')
+        print('2) Battle: [Try your skills with some combat between rivals]')
+        print('3) Train Pokemon: [Increase the combat prowess of your Pokemon]')
+        print('4) Heal: [Heal Your pokemon back into tip top shape]')
+        text= 'What would you like to do?(1-4)'
+        answer = choice(4, text)
+
+        if answer == 1:
+            editTeam()
+        elif answer == 2:
+            battle()
+        elif answer == 3:
+            trainPokemon()
+        else:
+            # user.heal_pokemon(user.pokemon_party[0])
+            healPokemon(user)
+#------------------------------------------------
+#WIll work on these on a future date
+def trainPokemon():
+    pass
+
+def battle():
+    pass
+
+def editTeam():
+    pass
+#-------------------------------------------------
+      
+def healPokemon(user):
+    if len(user.pokemon_party) < 1:
+        pass
+    else:
+        print_pokemon(user)
+        choice = int(input('Which Pokemon would you like to heal?'))
+        choice(len(user.pokemon_party))
+        user.heal_pokemon(user.pokemon_party[choice-1])
 
 
-         
+def choice(num, text):
+
+    lst = list(range(1,num+1))
+    answer= 0
+    while answer not in lst:
+        try:
+            answer = int(input(text))
+            if answer not in (1,num):
+                raise ValueError
+            break
+        except ValueError:
+            print('Select a valid Number')
+
+    return answer
 
 
 
 def main():
-    greeting()
+
+    print("Hello user welcome to beta 1 of my pokemon system \nWhat would you like to do?")
+    #Will loop until the user selects the number 1 or 2
+    choice_text = "1) Create a user \n2) Load a user \nAnswer Here: "
+    answer = choice(2,choice_text)
+    print('Ok you chose '+str(answer))
+    if answer == 1:
+        createUser()
+    elif answer == 2:
+        loadUser()
+    else:
+        print( "Function does not exist")
+    
+    
 
 
 

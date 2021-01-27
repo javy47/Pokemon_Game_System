@@ -20,6 +20,8 @@ class Trainer():
         else:
             return "You current have no pokemon"
 
+
+
     #WORK ON THIS SO THAT IT WORKS WITH DB
     
     def add_to_party(self,pokemon):
@@ -28,6 +30,13 @@ class Trainer():
             print("Your party of pokemon is currently at capacity. If you wish to add a pokemon you need to remove one first")
         else:
             self.pokemon_party.append(pokemon)
+            
+    #removes a pokemon from a players party
+    #if pokemon party size is greater than 0 then it will remove pokemon
+    def remove_from_party(self,pokemon):
+       if len(self.pokemon_party) > 0:
+           self.pokemon_party.remove(pokemon)
+
 
     def heal_pokemon(self,pokemon):
         #Will take a healing item(has a specific amount of health it can heal)
