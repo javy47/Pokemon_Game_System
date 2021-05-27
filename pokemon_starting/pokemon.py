@@ -257,7 +257,7 @@ class Pokemon():
         if self.current_hp <= 0:
             self.fainted = True
         else:
-            get_hp()
+            self.get_hp()
 
     def get_hp(self):
         print(self.current_hp)
