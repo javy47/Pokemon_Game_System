@@ -28,6 +28,60 @@ def createUser():
 
     
 
+#Takes the trainer id
+def load_trainers(id):
+    db.execute('SELECT * FROM trainer WHERE id= :id',{'id': id})
+    account = db.fetchone()
+
+    # db.execute('SELECT * FROM pokemon_party WHERE trainer_id= :trainer_id',{'trainer_id': account[0]})
+    # pokemon_trainer_list = db.fetchall()
+
+    #******************continue here tomorrow***************************2
+    pokemon_party = trainer_party(account[0])
+
+    user = Trainer(account[1],account[0],pokemon_party)
+    return user
+
+#creates the trainers party
+def trainer_party(trainer_id):
+    db.execute('SELECT * FROM pokemon_party WHERE trainer_id= :trainer_id',{'trainer_id': trainer_id})
+    pokemon_trainer_list = db.fetchall() 
+
+    pokemon_party = []
+    #If pokemon party_tranier list is empty prompt them to create their own team
+    #also means you would have to skip the for loop below
+    for pokemon in pokemon_trainer_list:
+
+        db.execute('SELECT * FROM pokemon WHERE pokedex_id= :pokemon_id',{'pokemon_id':pokemon[2] })
+        monster = db.fetchone()
+        #Pokemon Name
+        monster_name = monster[1]
+        #Pokemon Level
+        monster_level = monster[2]
+        #First pokemon type
+        monster_type1 = db.execute('SELECT type FROM pokemon_type WHERE id= :id', {'id': monster[3]}).fetchone()
+        #second pokemon type
+        monster_type2 = db.execute('SELECT type FROM pokemon_type WHERE id= :id', {'id': monster[4]}).fetchone()
+        #pokemon base hp
+        monster_hp = monster[5]
+        #pokemon base attack
+        monster_atk = monster[6]
+        #pokemon base defense
+        monster_def = monster[7]
+        #pokemon base special attack
+        monster_spatk = monster[8] 
+        #pokemon base special defense
+        monster_spdef = monster[9]
+        #pokemon base speed
+        monster_spe = monster[10]
+
+        pkmn = Pokemon(monster_name, monster_level, monster_type1[0], monster_type2[0], monster_hp, monster_atk, monster_def, monster_spatk, monster_spdef, monster_spe)
+        #assign all weakness and resistance to pokemon after their creation
+        pkmn.pokemon_weak_resist(monster_type1[0],monster_type2[0])
+      
+        pokemon_party.append(pkmn)
+    
+    return pokemon_party
 
 
 def loadUser():
@@ -37,73 +91,25 @@ def loadUser():
     db.execute('SELECT * FROM trainer WHERE username= :username',{'username': username})
     name = db.fetchone()
     print(name)
-    db.execute('SELECT * FROM pokemon_party WHERE trainer_id= :trainer_id',{'trainer_id': name[0]})
-    #trainer_id, pokemon_id
-    pokemon_trainer_list= db.fetchall()
-    #print(pokemon_trainer_list)
-
-    pokemon_party = []
-    #Goes through the reslt of the database query and adds each pokemon to that trainers party
-    #This will loop for each pokemon the trainer has(Also looping over a tuple)
-
-#If pokemon party_tranier list is empty prompt them to create their own team
-#also means you would have to skip the for loop below
-    for pokemon in pokemon_trainer_list:
-
-        db.execute('SELECT * FROM pokemon WHERE pokedex_id= :pokemon_id',{'pokemon_id':pokemon[2] })
-        monster = db.fetchone()
-        #print('printing pokemon')
-        #print(monster)
-        #Pokemon Name
-        monster_name = monster[1]
-        #print("Pokemon: "+ monster_name)
-        #Pokemon Level
-        monster_level = monster[2]
-        #print("pokemon level: "+ str(monster_level))
-        #First pokemon type
-        monster_type1 = db.execute('SELECT type FROM pokemon_type WHERE id= :id', {'id': monster[3]}).fetchone()
-        # print(monster_type1)
-        #second pokemon type
-        monster_type2 = db.execute('SELECT type FROM pokemon_type WHERE id= :id', {'id': monster[4]}).fetchone()
-        #print(monster_type2[0])
-        #pokemon base hp
-        monster_hp = monster[5]
-        #print(monster_hp)
-        #pokemon base attack
-        monster_atk = monster[6]
-        #print(monster_atk)
-        #pokemon base defense
-        monster_def = monster[7]
-        #print(monster_def)
-        #pokemon base special attack
-        monster_spatk = monster[8]
-        #print(monster_spatk)
-        #pokemon base special defense
-        monster_spdef = monster[9]
-        #print(monster_spdef)
-        #pokemon base speed
-        monster_spe = monster[10]
-        # print(monster_spe)
-
-        pkmn = Pokemon(monster_name, monster_level, monster_type1[0], monster_type2[0], monster_hp, monster_atk, monster_def, monster_spatk, monster_spdef, monster_spe)
-        #assign all weakness to pokemon after their creation
-        pkmn.pokemon_weakness(monster_type1[0],monster_type2[0])
-        pokemon_party.append(pkmn)
-    # print(pokemon_party[0],pokemon_party[1])
-
-
+  
+    pokemon_party = trainer_party(name[0])
 
     user = Trainer(name[1], name[0], pokemon_party)
     print(user)
     greeting(user)
 
+
 def print_pokemon(user):
      pokemon_traner_list = db.execute('SELECT * FROM pokemon_party WHERE trainer_id= :trainer_id',{'trainer_id': user.name}).fetchall()
 
-     count=1
-     for pokemon in user.pokemon_party:
+    #  count=1
+    #  for pokemon in user.pokemon_party:
+    #      print("{choice}) Pokemon: {name} HP: {current_hp}/{max_hp}".format(choice=count,name=pokemon.name, current_hp= pokemon.current_hp, max_hp=pokemon.maximum_hp))
+    #      count+=1
+
+     for count, pokemon in enumerate(user.pokemon_party, start=1):
          print("{choice}) Pokemon: {name} HP: {current_hp}/{max_hp}".format(choice=count,name=pokemon.name, current_hp= pokemon.current_hp, max_hp=pokemon.maximum_hp))
-         count+=1
+         
 
 
 
@@ -120,7 +126,7 @@ def greeting(user=None):
         if answer == 1:
             editTeam()
         elif answer == 2:
-            battle()
+            battle(user)
         elif answer == 3:
             trainPokemon()
         else:
@@ -131,9 +137,58 @@ def greeting(user=None):
 def trainPokemon():
     pass
 
-def battle():
-    pass
+def battle(player1):
+    db.execute('SELECT * FROM trainer')
+    trainer_lst = db.fetchall()
+    input_id = int(input('Which trainer would you like to battle?(1-{num})'.format(num=len(trainer_lst))))
 
+    player2 = load_trainers(input_id)
+    # Loaded the Second battler --Now to commence the battle
+
+    p1_poke_counter = len(player1.pokemon_party)
+    p2_poke_counter = len(player2.pokemon_party)
+
+    p1_poke_fainted = 0
+    p2_poke_fainted = 0
+
+    p1_current_pokemon = player1.pokemon_party[0]
+    p2_current_pokemon = player2.pokemon_party[0]
+
+    battle_over_flag = False
+    while not battle_over_flag:
+        #checking to see if pokemon is fainted or not
+        p1_current_pokemon.pokemon_alive
+        p2_current_pokemon.pokemon_alive
+        if p1_current_pokemon.fainted == True:
+            print("{pokemon} hp has dropped to 0".format(pokemon=p1_current_pokemon.name))
+            p1_current_pokemon = switch_pokemon(player1, id(p1.p1_current_pokemon))
+
+        print("What would you like to do?")
+        answer = choice(3,"1)Fight\n2)Heal\n3)Switch")
+        if answer == 1:
+            pass
+        elif answer == 2:
+            pass
+        else:
+            pass
+
+        if p1_poke_fainted == p1_poke_counter:
+            battle_over_flag = True
+            print('Player 2 Has won the battle')
+            break
+
+        if p2_poke_fainted == p2_poke_counter:
+            battle_over_flag = True
+            print('Player 1 Has won the battle')
+            break
+
+
+def switch_pokemon(trainer, pokemon_id):
+    switch_choices = [pokemon for pokemon in trainer.pokemon_party if id(pokemon) != pokemon_id if pokemon.fainted == False ]   
+    for i in range(0,len(switch_choices)):
+        print("%s) %s"%(i+1, switch_pokemon[i]))
+    answer = choice(len(switch_choices,'Which pokemon do you want to sub into battle?(1-%s)'%(len(switch_choices))))
+    
 def editTeam():
     pass
 #-------------------------------------------------

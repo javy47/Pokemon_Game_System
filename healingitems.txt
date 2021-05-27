@@ -1,0 +1,13 @@
+Berry Juice,Restores 20 HP of a Pokémon.,20
+Energy Powder,Restores 60 HP of a Pokémon.,60
+Energy Root,Restores 120 HP and lowers friendship of your Pokémon.,120
+Fresh Water,Restores 30 HP of a Pokémon.,30
+Full Restore,Restores HP to maximum and cures all status effects.,1000
+Hyper Potion,Restores 120 HP of a Pokémon.,120
+Lemonade,Restores 70 HP of a Pokémon.,70
+Max Potion,Restores HP to maximum,1000
+Moomoo Milk,Restores 10 HP of a Pokémon.,100
+Potion,Restores 20 HP of a Pokémon.,20
+Soda Pop,Restores 50 HP of a Pokémon.,50
+Super Potion,Restores 20 HP of a Pokémon.,60
+Sweet Heart,Restores 20 HP of a Pokémon.,20

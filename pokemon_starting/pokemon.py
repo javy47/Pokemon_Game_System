@@ -1,6 +1,5 @@
 import sqlite3
-from Trainer import Trainer
-from pokemon_data import Pokemon_Types
+
 import random
 
 conn = sqlite3.connect('pokemon.db')
@@ -11,6 +10,33 @@ db = conn.cursor()
 class Pokemon():
     def __init__(self, name, level, pokemon_type1, pokemon_type2, base_hp, base_attack, base_defense, base_spatk, base_spdef, base_speed, fainted=False):
         #Database Provided
+        '''
+        Parameters
+        ----------
+        name : str
+            The name of the pokemon creature
+        level : int
+            The power level of a pokemon. ranges from 1 to 100
+        pokemon_type1 : str
+            The primary Type given to a pokemon
+        pokemon_type2 : str
+            The secondary type for a given pokemon.
+        base_hp : int
+            The base health points for a given pokemon
+        base_attack : int
+            THe base physical attack value for a given pokemon
+        base_defense : int
+            The base physical defense value for a given pokemon
+        base_spatk : int
+            The base special attack value for a given pokemon
+        base_spdef : int
+            The base special defense value for a given pokemon
+        base_speed : int
+            The base speed value for a given pokemon(used to determine which pokemon attacks first)
+        fainted : bool
+            A flag used to determine if a pokemon can continue combat(default is False)
+        '''
+
         self.name = name
         self.level = level
         self.pokemon_type1 = pokemon_type1
@@ -27,12 +53,17 @@ class Pokemon():
         self.current_hp = base_hp
         self.fainted = fainted
 
+
         #Add Description for pokemon moves later
+        #FIX: create a function that adds move to a pokemon. [limt being no more that 4 moves]
         self.moves = [{"name":"Tackle", "damage": 35, "damage_type": "Normal"}]
         self.maximum_level = 100
 
         #Create a function to assign weakness
         self.weakness = []
+
+        #assign resistance
+        self.resistance = []
 
         #Work on this later --need to make this more robust
             # self.nature = nature
@@ -40,16 +71,51 @@ class Pokemon():
             # self.defense = defense
         
     # Returns all data on the pokemon that a user is printing
-    def __repr__(self):
+    def __str__(self):
         all_moves = ""
         for move in self.moves:
             all_moves = all_moves + move["name"]+"|"+ "Power:"+ str(move["damage"])+"\n"
+     
+        return f"Pokemon Name: {self.name.capitalize()} \nHP: {self.current_hp}/{self.maximum_hp}\nLevel: {self.level} \nType1: {self.pokemon_type1}\nType2: {self.pokemon_type2}\n---------------\nWeakness:\n{self.weakness}\n---------------\nResistance:\n{self.resistance}\n---------------\nMoves:\n{all_moves}"
 
-        return "Pokemon Name: {name} \nHP: {current_hp}/{max_hp}\nLevel: {level} \nType1: {pokemon_type1}\nType2: {pokemon_type2}\n---------------\nWeakness:\n{weakness}\n---------------\nMoves:\n{Moves}".format(
-            name= self.name.capitalize() ,current_hp=self.current_hp,max_hp=self.maximum_hp, level = self.level, pokemon_type1 = self.pokemon_type1,pokemon_type2= self.pokemon_type2,weakness=self.weakness, Moves=all_moves)
 
-    #Used to assign each pokemon with a weakness
-    def pokemon_weakness(self, type1, type2):
+    def __repr__(self):
+        return f"Pokemon({self.name},{self.level},{self.pokemon_type1},{self.pokemon_type2},{self.base_hp},{self.base_attack},{self.base_defense},{self.base_spatk},{self.base_defense},{self.base_speed})"
+
+    # Produces a list of resistances for a given pokemon
+    def _pokemon_resistance(self, type1, type2):
+
+        db.execute('SELECT resistance, immune FROM pokemon_resistance WHERE type= :type',{'type':type1 })
+        type1_resistance = db.fetchall()
+
+
+        for resist in type1_resistance:
+            self.resistance.append({'type': resist[0], 'multiplier': .5})
+            print(self.resistance)
+        
+
+        if type1 != type2:
+            db.execute('SELECT resistance, immune FROM pokemon_resistance WHERE type= :type',{'type':type2 })
+            type2_resistance = db.fetchall()
+            
+
+            temp = 0
+            for resist2 in type2_resistance:
+                for i in range(0,len(self.resistance)):
+
+                    if resist2[0] == self.resistance[i]['type']:
+                        self.resistance[i]['multiplier']*=.5
+                        temp = i
+                        break
+
+                if resist2[0] != self.resistance[temp]['type']:  
+                    if resist2[1] == "YES":
+                        self.resistance.append({'type': resist2[0], 'multiplier': 0})
+                    else:
+                        self.resistance.append({'type': resist2[0], 'multiplier': .5})
+
+    #Produces a list of weakness for a given pokemon
+    def _pokemon_weakness(self, type1, type2):
        
         db.execute('SELECT weakness FROM pokemon_type WHERE type= :type',{'type':type1 })
         type1_weakness = db.fetchall()
@@ -57,26 +123,49 @@ class Pokemon():
         for item in type1_weakness:
             self.weakness.append({'type': item[0], 'multiplier': 2})
 
-        db.execute('SELECT weakness FROM pokemon_type WHERE type= :type',{'type':type2 })
-        type2_weakness = db.fetchall()
+        if type1 != type2:
+            db.execute('SELECT weakness FROM pokemon_type WHERE type= :type',{'type':type2 })
+            type2_weakness = db.fetchall()
 
-        #Making sure that any overlapping weaknesses are stacked instead of showin gup 2x
-        temp = 0
-        for typei in type2_weakness:
-            for i in range(0,len(self.weakness)):
-                print(self.weakness[i]['type'])
-                if typei[0] == self.weakness[i]['type']:
-                    self.weakness[i]['multiplier']*=2
-                    # print('There is a duplicate of TYPE:'+self.weakness[i]['type'])
-                    temp = i
-                    break
+            #Making sure that any overlapping weaknesses are stacked instead of showing up 2x
+            temp = 0
+            for typei in type2_weakness:
+                for i in range(0,len(self.weakness)):
+                   
+                    if typei[0] == self.weakness[i]['type']:
+                        self.weakness[i]['multiplier']*=2
+                        
+                        temp = i
+                        break
 
-            if typei[0] != self.weakness[temp]['type']:       
-                self.weakness.append({'type': typei[0], 'multiplier': 2})
+                if typei[0] != self.weakness[temp]['type']:       
+                    self.weakness.append({'type': typei[0], 'multiplier': 2})
+    
+    # Takes the results from pokemon resist nad weaknees methods and corrects the lists accordingly
+    def pokemon_weak_resist(self, type1, type2):
+
+        self._pokemon_weakness(type1,type2)
+        print(self.weakness)
+
+        self._pokemon_resistance(type1, type2)
+        print(self.resistance)
         
-        #Time to take the pokemon resistances into account
-        #  db.execute('SELECT resistance FROM pokemon_type WHERE type= :type',{'type':type2 })
+        #Removing all false weaknesses
+       
+        for value in range(0,len(self.resistance)):
+            for val in self.weakness:
+                if self.resistance[value]['type']  == val['type']:
+                    temp = self.weakness[self.weakness.index(val)]['multiplier']
+                    self.weakness[self.weakness.index(val)]['multiplier']*=self.resistance[value]['multiplier']
+                    self.resistance[value]['multiplier']*=temp
+
+        modified_weakness = [weakness for weakness in self.weakness if weakness['multiplier'] >= 2]
+        self.weakness = modified_weakness
+
+        modified_resistance = [resistance for resistance in self.resistance if resistance['multiplier'] <= .5]
+        self.resistance = modified_resistance
         
+            
      
 
 
@@ -163,7 +252,18 @@ class Pokemon():
                 return
 
         self.moves.append({"name": name, "damage": power, "damage_type": damage_type})
-                      
+    
+    def pokemon_alive(self):
+        if self.current_hp <= 0:
+            self.fainted = True
+        else:
+            get_hp()
+
+    def get_hp(self):
+        print(self.current_hp)
+        
+    def fainted(self):
+        return self.fainted
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------                
 #Testing the Pokemon Type

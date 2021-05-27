@@ -1,15 +1,23 @@
+from pokemon_data import pokemon_types
+from itemsinfo import healing_items
 import sqlite3
+
+
+
 # conn = sqlite3.connect(':memory:')
 conn = sqlite3.connect('pokemon.db')
 db = conn.cursor()
 
 #[GOOD TO GO]
+
+# Execute the creation of a user to the database
 sql_create_trainer = db.execute("""CREATE TABLE trainer(
     id integer PRIMARY KEY,
     username text
     
 
 );""")
+
 #[GOOD TO GO]
 sql_create_join_pokemon_party = db.execute("""CREATE TABLE pokemon_party(
     id integer PRIMARY KEY,
@@ -48,21 +56,12 @@ sql_create_hp_restoring_items = db.execute(""" CREATE TABLE hp_restoring_items (
     healing_amount integer NOT NULL
 );""")
 
-#ALL HEALING ITEMS
-db.execute('INSERT INTO hp_restoring_items(name,description,healing_amount) VALUES ("Berry Juice","Restores 20 HP of a Pokémon.", 20)')
-db.execute('INSERT INTO hp_restoring_items(name,description,healing_amount) VALUES ("Energy Powder","Restores 60 HP, but lowers friendship of your Pokemon.", 60)')
-db.execute('INSERT INTO hp_restoring_items(name,description,healing_amount) VALUES ("Energy Root","Restores 120 HP, but lowers friendship of your Pokémon.", 120)')
-db.execute('INSERT INTO hp_restoring_items(name,description,healing_amount) VALUES ("Fresh Water","Restores 30 HP of a Pokémon.", 30)')
-db.execute('INSERT INTO hp_restoring_items(name,description,healing_amount) VALUES ("Full Restore","Restores HP to maximum and cures all status effects.", 1000)')
-db.execute('INSERT INTO hp_restoring_items(name,description,healing_amount) VALUES ("Hyper Potion","Restores 120 HP of a Pokémon.", 120)')
-db.execute('INSERT INTO hp_restoring_items(name,description,healing_amount) VALUES ("Lemonade","Restores 70 HP of a Pokémon.", 70)')
-db.execute('INSERT INTO hp_restoring_items(name,description,healing_amount) VALUES ("Max Potion","Restores HP to maximum", 1000)')
-db.execute('INSERT INTO hp_restoring_items(name,description,healing_amount) VALUES ("Moomoo Milk","Restores 10 HP of a Pokémon.", 100)')
-db.execute('INSERT INTO hp_restoring_items(name,description,healing_amount) VALUES ("Potion","Restores 20 HP of a Pokémon.", 20)')
-db.execute('INSERT INTO hp_restoring_items(name,description,healing_amount) VALUES ("Soda Pop","Restores 50 HP of a Pokémon.", 50)')
-db.execute('INSERT INTO hp_restoring_items(name,description,healing_amount) VALUES ("Super Potion","Restores 20 HP of a Pokémon.", 60)')
-db.execute('INSERT INTO hp_restoring_items(name,description,healing_amount) VALUES ("Sweet Heart","Restores 20 HP of a Pokémon.", 20)')
-#-------------------------------------------------------------------------------
+
+#ALL HEALING ITEMS   -- Adds all healing items to the database
+for item in healing_items:
+    db.execute(f"INSERT INTO hp_restoring_items(name,description,healing_amount) VALUES ('{item['name']}','{item['description']}',{int(item['value'])});")
+
+
 
 
 # sql_create_status = db.execute("""CREATE TABLE status(
@@ -74,85 +73,24 @@ db.execute('INSERT INTO hp_restoring_items(name,description,healing_amount) VALU
 
 # #ALL POKEMON STATUS
 
+
 #Pokemon Type Table 2x Effective
 sql_create_pokemontype_table = db.execute("""CREATE TABLE pokemon_type(
     id INTEGER PRIMARY KEY,
     type text NOT NULL,
     weakness text NOT NULL
 );""")
-#-------------------------------------------------------------------------------
 
 #ALL POKEMON TYPES:
 
-#FIRE (1-3)
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("FIRE","WATER")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("FIRE","GROUND")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("FIRE","ROCK")')
-#WATER(4-5)
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("WATER","ELECTRIC")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("WATER","GRASS")')
-#GRASS (6-10)
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("GRASS","BUG")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("GRASS","FIRE")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("GRASS","FLYING")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("GRASS","ICE")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("GRASS","POISON")')
-#NORMAL(11)
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("NORMAL","FIGHTING")')
-#FIGHTING (12-14)
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("FIGHTING","FLYING")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("FIGHTING","FAIRY")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("FIGHTING","PSYCHIC")')
-#FLYING(15-18)
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("FLYING","ROCK")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("FLYING","ELECTRIC")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("FLYING","ICE")')
-#POISON(19-20)
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("POISON","GROUND")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("POISON","PSYCHIC")')
-#GROUND (21-23)
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("GROUND","WATER")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("GROUND","GRASS")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("GROUND","ICE")')
-#ROCK (24-28)
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("ROCK","GROUND")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("ROCK","FIGHTING")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("ROCK","STEEL")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("ROCK","WATER")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("ROCK","GRASS")')
-#BUGS (29-31)
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("BUG","FLYING")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("BUG","ROCK")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("BUG","FIRE")')
-#GHOST (32-33)
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("GHOST","GHOST")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("GHOST","DARK")')
-#STEEL (34-36)
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("STEEL","GROUND")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("STEEL","FIGHTING")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("STEEL","FIRE")')
-#ELECTRIC (37)
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("ELECTRIC","GROUND")')
-#PSYCHIC (38-40)
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("PSYCHIC","BUG")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("PSYCHIC","GHOST")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("PSYCHIC","DARK")')
-#ICE (41-44)
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("ICE","STEEL")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("ICE","FIRE")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("ICE","FIGHTING")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("ICE","ROCK")')
-#DRAGON (45-47)
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("DRAGON","ICE")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("DRAGON","FAIRY")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("DRAGON","DRAGON")')
-#FAIRY (48-49)
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("FAIRY","POISON")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("FAIRY","STEEL")')
-#DARK (50-52)
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("DARK","FIGHTING")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("DARK","BUG")')
-db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("DARK","FAIRY")')
+#FIRE (1-3) # #WATER(4-5) # #GRASS (6-10) #NORMAL(11) #FIGHTING (12-14) #FLYING(15-17)
+#POISON(18-19) #GROUND (20-22) #ROCK (23-27) #BUGS (28-30) #GHOST (31-332) #STEEL (33-35) 
+#ELECTRIC (36) #PSYCHIC (37-39) #ICE (40-43) #DRAGON (44-46) #FAIRY (47-48) #DARK (49-51)
+
+for poketype in pokemon_types:
+    for weakness in poketype['weakness']:
+        db.execute(f"INSERT INTO pokemon_type(type, weakness) VALUES ('{poketype['type'].upper()}','{weakness.upper()}');")
+
 #-------------------------------------------------------------------------------
 
 #Pokemon Resistances 1/2x Effective
@@ -160,89 +98,98 @@ db.execute('INSERT INTO pokemon_type(type, weakness) VALUES ("DARK","FAIRY")')
 sql_create_pokemonresistance_table = db.execute("""CREATE TABLE pokemon_resistance(
     id INTEGER PRIMARY KEY,
     type text NOT NULL,
-    resistance text NOT NULL
+    resistance text NOT NULL,
+    immune text NOT NULL
 );""")
 
 #all Pokemon Type resistance
 #Normal Type
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("NORMAL","NONE")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("NORMAL","GHOST", "YES");')
 #Fighting TYpe
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("FIGHTING","ROCK")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("FIGHTING","BUG")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("FIGHTING","DARK")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("FIGHTING","ROCK", "NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("FIGHTING","BUG", "NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("FIGHTING","DARK", "NO");')
 #FLYING TYPE
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("FLYING","FIGHTING")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("FLYING","BUG")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("FLYING","GRASS")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("FLYING","FIGHTING","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("FLYING","BUG","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("FLYING","GRASS","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("FLYING","GROUND","YES");')
 #POISON TYPE
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("POISON","FIGHTING")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("POISON","POISON")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("POISON","GRASS")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("POISON","FAIRY")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("POISON","FIGHTING","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("POISON","POISON","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("POISON","GRASS","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("POISON","FAIRY","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("POISON","BUG","NO");')
 #GROUND TYPE
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("GROUND","POISON")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("GROUND","ROCK")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("GROUND","POISON","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("GROUND","ROCK","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("GROUND","ELECTRIC","YES");')
 #ROCK TYPE
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("ROCK","NORMAL")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("ROCK","FLYING")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("ROCK","POISON")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("ROCK","FIRE")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("ROCK","NORMAL","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("ROCK","FLYING","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("ROCK","POISON","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("ROCK","FIRE","NO");')
 #BUG TYPE
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("BUG","FIGHTING")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("ROCK","GROUND")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("ROCK","GRASS")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("BUG","FIGHTING","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("BUG","GROUND","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("BUG","GRASS","NO");')
 #GHOST TYPE
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("GHOST","FIGHTING")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("ROCK","POISON")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("ROCK","BUG")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("GHOST","POISON","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("GHOST","BUG","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("GHOST","NORMAL","YES");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("GHOST","FIGHTING","YES");')
 #STEEL TYPE
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("STEEL","NORMAL")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("STEEL","FLYING")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("STEEL","ROCK")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("STEEL","BUG")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("STEEL","STEEL")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("STEEL","GRASS")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("STEEL","PSYCHIC")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("STEEL","ICE")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("STEEL","DRAGON")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("STEEL","FAIRY")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("STEEL","POISON","YES");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("STEEL","NORMAL","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("STEEL","FLYING","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("STEEL","ROCK","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("STEEL","BUG","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("STEEL","STEEL","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("STEEL","GRASS","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("STEEL","PSYCHIC","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("STEEL","ICE","NO")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("STEEL","DRAGON","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("STEEL","FAIRY","NO");')
 #FIRE TYPE
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("FIRE","BUG")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("FIRE","STEEL")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("FIRE","FIRE")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("FIRE","GRASS")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("FIRE","ICE")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("FIRE","BUG","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("FIRE","STEEL","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("FIRE","FIRE","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("FIRE","GRASS","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("FIRE","ICE","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("FIRE","FAIRY","NO");')
 #WATER TYPE
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("WATER","STEEL")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("WATER","FIRE")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("WATER","WATER")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("WATER","ICE")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("WATER","STEEL","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("WATER","FIRE","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("WATER","WATER","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("WATER","ICE","NO");')
 #GRASS TYPE
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("GRASS","GROUND")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("GRASS","WATER")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("GRASS","GRASS")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("GRASS","ELECTRIC")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("GRASS","GROUND","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("GRASS","WATER","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("GRASS","GRASS","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("GRASS","ELECTRIC","NO");')
 #ELECTRIC TYPE
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("ELECTRIC","FLYING")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("ELECTRIC","STEEL")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("ELECTRIC","ELECTRIC")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("ELECTRIC","FLYING","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("ELECTRIC","STEEL","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("ELECTRIC","ELECTRIC","NO");')
 #PSYCHIC TYPE
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("PSYCHIC","FIGHTING")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("PSYCHIC","PSYCHIC")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("PSYCHIC","FIGHTING","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("PSYCHIC","PSYCHIC","NO");')
 #ICE TYPE
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("ICE","ICE")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("ICE","ICE","NO");')
 #DRAGON TYPE
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("DRAGON","FIRE")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("DRAGON","WATER")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("DRAGON","GRASS")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("DRAGON","ELECTRIC")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("DRAGON","FIRE","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("DRAGON","WATER","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("DRAGON","GRASS","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("DRAGON","ELECTRIC","NO");')
 #FAIRY TYPE
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("FAIRY","FIGHTING")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("FAIRY","BUG")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("FAIRY","DARK")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("FAIRY","FIGHTING","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("FAIRY","BUG","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("FAIRY","DARK","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("FAIRY","DRAGON","YES");')
 #DARK TYPE
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("DARK","GHOST")')
-db.execute('INSERT INTO pokemon_resistance(type, resistance) VALUES ("DARK","DARK")')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("DARK","GHOST","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("DARK","DARK","NO");')
+db.execute('INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ("DARK","PSYCHIC","YES");')
 #-------------------------------------------------------------------------------
 
 
@@ -266,10 +213,15 @@ db.execute('INSERT INTO pokemon(name,level,type1_id,type2_id,base_hp,base_atk,ba
 
 #creating a demo user
 db.execute('INSERT INTO trainer(username) VALUES ("Javy")')
+db.execute('INSERT INTO trainer(username) VALUES ("Voltsy")')
 
 #Pokemon party test
 db.execute('INSERT INTO pokemon_party (trainer_id,pokemon_id) VALUES (1,3)')
 db.execute('INSERT INTO pokemon_party (trainer_id,pokemon_id) VALUES (1,6)')
+db.execute('INSERT INTO pokemon_party (trainer_id,pokemon_id) VALUES (1,9)')
+
+db.execute('INSERT INTO pokemon_party (trainer_id,pokemon_id) VALUES (2,9)')
+db.execute('INSERT INTO pokemon_party (trainer_id,pokemon_id) VALUES (2,1)')
 
 
 
@@ -289,6 +241,14 @@ db.execute('INSERT INTO pokemon_party (trainer_id,pokemon_id) VALUES (1,6)')
 # db.execute('SELECT * FROM trainer WHERE username= :user',{'user': "john"})
 # print(db.fetchone())
 
+# db.execute('SELECT * FROM hp_restoring_items ')
+# print(db.fetchall())
+
+db.execute('SELECT * FROM pokemon_type ')
+print(db.fetchall())
+
+db.execute('SELECT * FROM pokemon_resistance ')
+print(db.fetchall())
 conn.commit()
 
 

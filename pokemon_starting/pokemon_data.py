@@ -1,9 +1,7 @@
-Healing_Items = [{"name": "potion", "amount": 20}]
-
 
 #For each pokemon create their type with a dict so that you can have it tied to each weakness
 #------------------------------------------------------------------------------------------------------------------------------------------------------
-Pokemon_Types = [
+pokemon_types = [
                     {"type": "Fire" ,"weakness":["Water","Ground","Rock"]},
                     {"type": "Water","weakness":["Electric","Grass"]},
                     {"type": "Grass" ,"weakness":["Bug","Fire","Flying","Ice","Poison"]},
@@ -24,3 +22,13 @@ Pokemon_Types = [
                     {"type": "Fairy","weakness":["Poison", "Steel"]},
                     {"type": "Dark","weakness":["Fighting","Bug","Fairy"]},
                 ]
+
+
+# pokemon_resistance = []
+
+# pokemon_csv = open('../pokemonresist.txt', "r")
+# for poketype in pokemon_csv:
+#     category, resist, immune = poketype.split(',')
+#     pokemon_resistance.append({'type': category, 'resistance': resist, 'immune': immune})
+
+
