@@ -264,7 +264,6 @@ class Pokemon():
         
     def fainted(self):
         return self.fainted
-
 #------------------------------------------------------------------------------------------------------------------------------------------------------                
 #Testing the Pokemon Type
 # print(Pokemon_Types[0]["type"])

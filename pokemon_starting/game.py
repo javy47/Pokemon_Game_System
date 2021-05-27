@@ -2,7 +2,6 @@ import sqlite3
 from Trainer import Trainer
 from pokemon import Pokemon
 
-
 conn = sqlite3.connect('pokemon.db')
 db = conn.cursor()
 
