@@ -6,10 +6,11 @@ import pathlib
 healing_items = []
 
 #if i run from terminal use ..\healingitems.txt
-f = open("./healingitems.txt", "r")
-for item in  f:
-    name, description, value = item.split(',')
-    healing_items.append({'name': name, 'description': description, 'value': value})
+with open(pathlib.Path.cwd().joinpath('healingitems.txt')) as h_items:
+
+    for item in  h_items:
+        name, description, value = item.split(',')
+        healing_items.append({'name': name, 'description': description, 'value': value})
     
 
 
