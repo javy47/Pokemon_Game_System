@@ -116,4 +116,5 @@ def healPokemon(user):
         print(f"{count+1}) {item[1]}")
         
     medicine_to_use = user_selection(len(medicine), f"Which Healing Item do youy want to use?(1-{len(medicine)})")
-    print(user.heal_pokemon(pokemon_to_heal-1, medicine[medicine_to_use][3]))
+    print(medicine[medicine_to_use-1][1])
+    print(user.heal_pokemon(pokemon_to_heal-1, medicine[medicine_to_use-1][1], medicine[medicine_to_use-1][3]))

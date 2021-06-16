@@ -58,7 +58,7 @@ sql_create_hp_restoring_items = db.execute(""" CREATE TABLE hp_restoring_items (
 
 #ALL HEALING ITEMS   -- Adds all healing items to the database
 for item in healing_items:
-    db.execute(f"INSERT INTO hp_restoring_items(name,description,healing_amount) VALUES ('{item['name']}','{item['description']}',{int(item['value'])});")
+    db.execute(f"INSERT INTO hp_restoring_items(name,description,healing_amount) VALUES ('{item['name']}','{item['description']}',{float(item['value'])});")
 
 
 #Pokemon Type Table 2x Effective
@@ -90,7 +90,7 @@ sql_create_pokemonresistance_table = db.execute("""CREATE TABLE pokemon_resistan
 );""")
 
 for resist in pokemon_resistance:
-    db.execute(f"INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ({resist['type'].upper()},{resist['resistance'].upper()},{resist['immune'].upper()});")
+    db.execute(f"INSERT INTO pokemon_resistance(type, resistance, immune) VALUES ('{resist['type'].upper()}','{resist['resistance'].upper()}','{resist['immune'].upper()}');")
 
 
 #Starting off with the 10 original pokemon

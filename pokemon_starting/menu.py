@@ -112,11 +112,15 @@ def main_menu(user=None):
             print("Combat coming soon!!!!!")
             enemy = load_enemy(2)
             battle(user, enemy)
+        elif answer == 2:
+            if user.num_fainted_pokemon == len(user.pokemon_party):
+                print("All of your pokemon are fainted. It is recommended that you heal your pokemon")
+            else:
+                train_pokemon(user)
         elif answer == 3:
-            train_pokemon(user)
-        elif answer == 4:
             healPokemon(user)
         else:
+            print("***** Thank you for playing. ***** ")
             break
 
 
@@ -127,7 +131,7 @@ def train_pokemon(user):
     Keyword argument:
     user -- This is the trainer object used to obtain a trainers pokemon party
     """
-    display_pokemon(user)
+    display_pokemon(user.pokemon_party)
     pokemon_to_train = user_selection(len(user.pokemon_party),f"Which Pokemon do you want to train?(1-{len(user.pokemon_party)}):")
 
     user.level_pokemon(pokemon_to_train-1,1)

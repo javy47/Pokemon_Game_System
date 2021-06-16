@@ -249,9 +249,10 @@ class Pokemon():
 
     def revive(self):
         if self.fainted is True:
-            self.current_hp = self.maximum_hp/2
+            self.current_hp = int(self.maximum_hp/2)
+            return f"Your pokemon {self.name} has been revived"
         else:
-            print("The item revive has no effect on pokemon not fainted")
+            return "The item revive has no effect on pokemon not fainted"
 
 
     def user_attack(self,attacker, opponent,*pokemons):

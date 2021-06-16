@@ -94,7 +94,10 @@ class Trainer():
            self.pokemon_party.remove(pokemon)
 
 
-    def heal_pokemon(self, pokemon_index, amount):
+    def heal_pokemon(self, pokemon_index,item_name,amount):
+        if item_name in 'Revive':
+            return self.pokemon_party[pokemon_index].revive()
+
         return self.pokemon_party[pokemon_index].increase_hp(amount)
 
 

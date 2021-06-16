@@ -11,3 +11,4 @@ Potion,Restores 20 HP of a Pokémon.,20
 Soda Pop,Restores 50 HP of a Pokémon.,50
 Super Potion,Restores 20 HP of a Pokémon.,60
 Sweet Heart,Restores 20 HP of a Pokémon.,20
+Revive,Revives and Restores 50% of a Pokémons HP,.5
